@@ -1,7 +1,6 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {useRealm} from '../context/RealmContext';
-import {User} from '../databases/models/User';
 import {Token} from '../databases/models/Token';
 
 function Main({navigation, route}) {
@@ -10,9 +9,12 @@ function Main({navigation, route}) {
 
   const logout = () => {
     const toUpdate = realm.objects(Token)[0];
-    realm.write(() => {
-      realm.delete(toUpdate);
-    });
+    if (toUpdate) {
+      realm.write(() => {
+        realm.delete(toUpdate);
+      });
+    }
+
     navigation.navigate('login');
   };
   return (

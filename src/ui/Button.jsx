@@ -11,14 +11,7 @@ const StyledButton = styled.TouchableOpacity`
   background-color: ${props => props.backgroundColor || '#fff'};
 `;
 
-function Button({
-  children,
-  colorText,
-  backgroundColor,
-  borderWidth,
-  margin,
-  onHandlePress,
-}) {
+function Button({children, colorText, backgroundColor, margin, onHandlePress}) {
   return (
     <View
       style={
@@ -29,10 +22,7 @@ function Button({
           marginLeft: margin[3],
         }
       }>
-      <StyledButton
-        borderWidth={borderWidth}
-        backgroundColor={backgroundColor}
-        onPress={onHandlePress}>
+      <StyledButton backgroundColor={backgroundColor} onPress={onHandlePress}>
         <Text
           style={{
             textAlign: 'center',

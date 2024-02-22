@@ -8,6 +8,7 @@ import Button from '../ui/Button';
 import SliderSwitch from '../ui/SliderSwitch';
 import {useQuery, useRealm} from '../context/RealmContext';
 import {User} from '../databases/models/User';
+import {Token} from '../databases/models/Token';
 // import useLogin from '../features/authentication/useLogin';
 
 const StyledText = styled.Text`
@@ -28,29 +29,42 @@ export default function Login({navigation}) {
   const realm = useRealm();
 
   const toggleSwitch = () => {
+    // realm.write(() => {
+    //   realm.deleteAll();
+    // });
     setIsRememberMe(previousState => !previousState);
   };
 
   const login = () => {
-    if (isRememberMe) {
-      realm.write(() => {
-        realm.create(User, {
-          accessToken: '123456',
+    const user = realm.objects(User).filtered('email == $0', email);
+
+    if (user[0].password === password) {
+      if (isRememberMe) {
+        realm.write(() => {
+          realm.create(Token, {
+            content: String(Math.floor(Math.random() * 1000)),
+          });
         });
-      });
+      }
+      setEmail('');
+      setPassword('');
+      setIsRememberMe(false);
+      navigation.navigate('main', {email});
     }
-    setEmail('');
-    setPassword('');
-    setIsRememberMe(false);
-    navigation.navigate('main');
   };
 
+  const token = useQuery(Token);
   const user = useQuery(User);
+
+  console.log(user);
+  console.log(token);
+
   useEffect(() => {
-    if (user.length > 0) {
-      navigation.navigate('main');
+    if (token.length > 0) {
+      navigation.navigate('main', {email});
     }
-  }, [user, navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, navigation]);
 
   return (
     <SafeAreaView style={{backgroundColor: '#fff', flex: 1}}>

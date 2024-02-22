@@ -1,12 +1,13 @@
-import {createRealmContext} from '@realm/react';
 import Realm from 'realm';
 
 export class User extends Realm.Object {
   static schema = {
     name: 'User',
-    primaryKey: 'accessToken',
+    primaryKey: '_id',
     properties: {
-      accessToken: 'string',
+      _id: 'int',
+      email: 'string',
+      password: 'string',
     },
   };
 }

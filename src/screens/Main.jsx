@@ -1,7 +1,20 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
+import {useRealm} from '../context/RealmContext';
+import {User} from '../databases/models/User';
+import {Token} from '../databases/models/Token';
 
-function Main({navigation}) {
+function Main({navigation, route}) {
+  const realm = useRealm();
+  const {email} = route.params;
+
+  const logout = () => {
+    const toUpdate = realm.objects(Token)[0];
+    realm.write(() => {
+      realm.delete(toUpdate);
+    });
+    navigation.navigate('login');
+  };
   return (
     <View
       style={{
@@ -17,7 +30,7 @@ function Main({navigation}) {
         }}>
         Welcome to Main
       </Text>
-      <TouchableOpacity onPress={() => navigation.navigate('login')}>
+      <TouchableOpacity onPress={() => logout()}>
         <Text
           style={{
             marginTop: 20,

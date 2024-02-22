@@ -2,12 +2,12 @@ import React from 'react';
 import {AppRegistry} from 'react-native';
 import App from './src/App';
 import {name as appName} from './app.json';
-import config, {RealmProvider, User} from './src/databases/models/User';
-import {createRealmContext} from '@realm/react';
+import {RealmProvider} from './src/context/RealmContext';
+import {User} from './src/databases/models/User';
 
 const AppWrapper = () => {
   return (
-    <RealmProvider schema={[User]}>
+    <RealmProvider>
       <App />
     </RealmProvider>
   );

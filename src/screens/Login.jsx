@@ -1,19 +1,13 @@
-import React, {useState} from 'react';
-import {
-  Text,
-  SafeAreaView,
-  View,
-  KeyboardAvoidingView,
-  Linking,
-  Alert,
-} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Text, SafeAreaView, View, KeyboardAvoidingView} from 'react-native';
 import styled from 'styled-components/native';
 
 import Logo from '../ui/Logo';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
-import {User, useQuery, useRealm} from '../databases/models/User';
 import SliderSwitch from '../ui/SliderSwitch';
+import {useQuery, useRealm} from '../context/RealmContext';
+import {User} from '../databases/models/User';
 // import useLogin from '../features/authentication/useLogin';
 
 const StyledText = styled.Text`
@@ -29,61 +23,34 @@ const Header = styled.View`
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isEnabled, setIsEnabled] = useState(false);
-  const [isFillPassword, setIsFillPassword] = useState(false);
+  const [isRememberMe, setIsRememberMe] = useState(false);
 
   const realm = useRealm();
-  const toggleSwitch = () => {
-    setIsEnabled(previousState => !previousState);
-    // update the user's data
-  };
 
-  const toggleSwitchFillPassword = () => {
-    setIsFillPassword(previousState => !previousState);
-    // fill password if isRemember is true from realm
-    if (!isFillPassword) {
-      const toUpdateUser = realm.objects('User').filtered('email = $0', email);
-      if (toUpdateUser[0].isRemember) {
-        setPassword(toUpdateUser[0].password);
-      } else {
-        Alert.alert(
-          'Fill password',
-          'Please remember password first and login. Then when you login for later, you can use this function',
-          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
-        );
-        setIsFillPassword(false);
-        setIsEnabled(false);
-      }
-    } else {
-      setPassword('');
-    }
+  const toggleSwitch = () => {
+    setIsRememberMe(previousState => !previousState);
   };
 
   const login = () => {
-    const toUpdateUser = realm.objects('User').filtered('email = $0', email);
-
-    // check email and password
-    if (
-      toUpdateUser[0].email === email &&
-      toUpdateUser[0].password === password
-    ) {
+    if (isRememberMe) {
       realm.write(() => {
-        toUpdateUser[0].isRemember = isEnabled;
+        realm.create(User, {
+          accessToken: '123456',
+        });
       });
-      // navigate to home
-      navigation.navigate('main');
-    } else {
-      // show error message
-      console.log('Invalid email or password');
     }
     setEmail('');
     setPassword('');
-    setIsEnabled(false);
-    setIsFillPassword(false);
+    setIsRememberMe(false);
+    navigation.navigate('main');
   };
 
   const user = useQuery(User);
-  console.log(user);
+  useEffect(() => {
+    if (user.length > 0) {
+      navigation.navigate('main');
+    }
+  }, [user, navigation]);
 
   return (
     <SafeAreaView style={{backgroundColor: '#fff', flex: 1}}>
@@ -129,13 +96,8 @@ export default function Login({navigation}) {
         <View style={{marginBottom: 50}}>
           <SliderSwitch
             toggleSwitch={toggleSwitch}
-            isEnabled={isEnabled}
+            isEnabled={isRememberMe}
             content="Remember me"
-          />
-          <SliderSwitch
-            toggleSwitch={toggleSwitchFillPassword}
-            isEnabled={isFillPassword}
-            content="Fill password"
           />
         </View>
 

@@ -7,7 +7,6 @@ const StyledButton = styled.TouchableOpacity`
   margin-left: auto;
   margin-right: auto;
   padding: 15px;
-  border-width: ${props => props.borderWidth || 'none'};
   border-radius: 34px;
   background-color: ${props => props.backgroundColor || '#fff'};
 `;

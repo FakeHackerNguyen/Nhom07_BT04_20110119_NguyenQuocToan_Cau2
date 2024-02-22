@@ -38,7 +38,7 @@ export default function Login({navigation}) {
   const login = () => {
     const user = realm.objects(User).filtered('email == $0', email);
 
-    if (user[0].password === password) {
+    if (user[0].password === password && password !== '') {
       if (isRememberMe) {
         realm.write(() => {
           realm.create(Token, {
